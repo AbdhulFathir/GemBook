@@ -1,6 +1,6 @@
 # gem_book
 
-SDGP group project Y3-14
+
 
 ## Getting Started
 
