@@ -26,8 +26,7 @@ class _LoginViewState extends State<LoginView> {
   final bool obscurePassword = true;
   String userName = "";
   String pwd = "";
-   AppUser retrievedUser = AppUser();
-
+  AppUser retrievedUser = AppUser();
 
   @override
   Widget build(BuildContext context) {
@@ -38,9 +37,9 @@ class _LoginViewState extends State<LoginView> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              const SizedBox(height: 80,),
+              const SizedBox(height: 80),
               _header(context),
-              const SizedBox(height: 20,),
+              const SizedBox(height: 20),
               _inputField(context),
               _forgotPassword(context),
               _signup(context),
@@ -67,10 +66,10 @@ class _LoginViewState extends State<LoginView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-         CustomTextField(
+        CustomTextField(
           hintText: AppStrings.emailAddress,
           icon: const Icon(Icons.person),
-          onChanged: (value){
+          onChanged: (value) {
             userName = value;
           },
         ),
@@ -79,7 +78,7 @@ class _LoginViewState extends State<LoginView> {
           hintText: AppStrings.password,
           icon: const Icon(Icons.remove_red_eye),
           obscureText: obscurePassword,
-          onChanged: (value){
+          onChanged: (value) {
             pwd = value;
           },
         ),
@@ -87,14 +86,13 @@ class _LoginViewState extends State<LoginView> {
         BtnComponent(
           title: AppStrings.login,
           onTap: () {
-           if(userName.isEmpty || pwd.isEmpty){
-             CustomSnackBar.show(context, 'Please enter your login details');
-           }else{
-             loginAndRedirectToHome(userName,pwd,context);
-           }
+            if (userName.isEmpty || pwd.isEmpty) {
+              CustomSnackBar.show(context, 'Please enter your login details');
+            } else {
+              loginAndRedirectToHome(userName, pwd, context);
+            }
             // login();
           },
-
         ),
         // ElevatedButton(
         //   onPressed: () {
@@ -138,9 +136,7 @@ class _LoginViewState extends State<LoginView> {
         const Text("Don't have an account? "),
         TextButton(
             onPressed: () {
-              Navigator.pushNamed(
-                context,
-                Routes.kIntroPage);
+              Navigator.pushNamed(context, Routes.kIntroPage);
             },
             child: const Text(
               "Sign Up",
@@ -151,49 +147,47 @@ class _LoginViewState extends State<LoginView> {
   }
 
   showProgressBar(BuildContext? context) {
-      showGeneralDialog(
-          context: context!,
-          barrierDismissible: false,
-          transitionBuilder: (context, a1, a2, widget) {
-            return PopScope(
-              canPop: false,
-              child: Transform.scale(
-                scale: a1.value,
-                child: Opacity(
-                  opacity: a1.value,
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
-                    child: Container(
-                      alignment: FractionalOffset.center,
-                      child: Wrap(
-                        children: [
-                          Container(
-                            color: Colors.transparent,
-                            // child: SpinKitThreeBounce(
-                            //   color: source.baseColor,
-                            // ),
-                          ),
-                        ],
-                      ),
+    showGeneralDialog(
+        context: context!,
+        barrierDismissible: false,
+        transitionBuilder: (context, a1, a2, widget) {
+          return PopScope(
+            canPop: false,
+            child: Transform.scale(
+              scale: a1.value,
+              child: Opacity(
+                opacity: a1.value,
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+                  child: Container(
+                    alignment: FractionalOffset.center,
+                    child: Wrap(
+                      children: [
+                        Container(
+                          color: Colors.transparent,
+                          // child: SpinKitThreeBounce(
+                          //   color: source.baseColor,
+                          // ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ),
-            );
-          },
-          transitionDuration: const Duration(milliseconds: 200),
-          pageBuilder: (BuildContext context, Animation<double> animation,
-              Animation<double> secondaryAnimation) {
-            return const SizedBox.shrink();
-          });
-
+            ),
+          );
+        },
+        transitionDuration: const Duration(milliseconds: 200),
+        pageBuilder: (BuildContext context, Animation<double> animation,
+            Animation<double> secondaryAnimation) {
+          return const SizedBox.shrink();
+        });
   }
-
 
   Future<void> login() async {
     showProgressBar(context);
-    final username =userName;
-    final password =pwd;
+    final username = userName;
+    final password = pwd;
 
     // Create the request body
     final body = jsonEncode({
@@ -218,7 +212,8 @@ class _LoginViewState extends State<LoginView> {
         if (kDebugMode) {
           print('Login failed: ${response.statusCode}');
         }
-        CustomSnackBar.show(context, 'Login failed! ${responseBody['message']}');
+        CustomSnackBar.show(
+            context, 'Login failed! ${responseBody['message']}');
       }
     } catch (error) {
       if (kDebugMode) {
@@ -235,10 +230,12 @@ class _LoginViewState extends State<LoginView> {
     }
   }
 
-  Future<void> loginAndRedirectToHome(String email, String password, BuildContext context) async {
+  Future<void> loginAndRedirectToHome(
+      String email, String password, BuildContext context) async {
     showProgressBar(context);
     try {
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -247,7 +244,8 @@ class _LoginViewState extends State<LoginView> {
       if (user != null) {
         final uid = user.uid;
         // Access user data using uid
-        final docRef = await FirebaseFirestore.instance.collection('users').doc(uid);
+        final docRef =
+            await FirebaseFirestore.instance.collection('users').doc(uid);
         await docRef.get().then((docSnapshot) async {
           if (docSnapshot.exists) {
             // Extract user data
@@ -263,7 +261,8 @@ class _LoginViewState extends State<LoginView> {
               kUser = retrievedUser;
             });
             Navigator.pop(context); // Dismiss progress bar
-            Navigator.pushReplacementNamed(context, Routes.kHomeView, arguments: retrievedUser);
+            Navigator.pushReplacementNamed(context, Routes.kHomeView,
+                arguments: retrievedUser);
           } else {
             Navigator.pop(context); // Dismiss progress bar
             CustomSnackBar.show(context, "Please check your login credentials");
@@ -290,14 +289,13 @@ class _LoginViewState extends State<LoginView> {
     }
   }
 
-
-
   Future<void> forgotPassword(String email) async {
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(
         email: email,
       );
-      CustomSnackBar.show(context, 'Password reset email sent! Please check your inbox.');
+      CustomSnackBar.show(
+          context, 'Password reset email sent! Please check your inbox.');
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         CustomSnackBar.show(context, 'No user found for that email.');
@@ -306,10 +304,4 @@ class _LoginViewState extends State<LoginView> {
       }
     }
   }
-
-
-
-
 }
-
-
